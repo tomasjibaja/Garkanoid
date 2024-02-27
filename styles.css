@@ -27,7 +27,7 @@ canvas {
     display: block;
 }
 
-#lose-modal {
+#lose-modal, #win-modal {
     position: absolute;
     top: 0;
     left: 0;
@@ -37,14 +37,18 @@ canvas {
     justify-content: space-evenly;
     width: 100vw;
     height: 90vh;
-    background-color: rgba(50,25,25,.9);
     transition: opacity .3s ease;
     opacity: 0;
     z-index: -1;
 }
 
-#lose-modal > img {
+#win-brick, #win-brick {
     width: 100px;
+    filter: brightness(1);
+}
+
+#win-brick:hover {
+    filter: brightness(2);
 }
 
 @keyframes laugh {
@@ -52,6 +56,13 @@ canvas {
     40% {transform: translateY(0);}
     70% {transform: translateY(-10px);}
     100% {transform: translateY(0);}
+}
+
+@keyframes shine {
+    0% {filter: brightness(1) drop-shadow(0 0 2px midnightblue)}
+    25% {filter: brightness(1) drop-shadow(0 0 6px royalblue)}
+    75% {filter: brightness(2) drop-shadow(0 0 12px deepskyblue)}
+    100% {filter: brightness(1) drop-shadow(0 0 2px midnightblue)}
 }
 
 h1 {

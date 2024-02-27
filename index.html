@@ -24,9 +24,14 @@
     <img hidden id="brick3hit" src="./img/brick3hit.png" alt="Brick face">
     <img hidden id="brick4hit" src="./img/brick4hit.png" alt="Brick face">
 
-    <div id="lose-modal">
+    <div style="background-color: rgba(50,25,25,.9);" id="lose-modal">
         <h1>GAME OVER</h1>
         <img id="laughing-brick" src="./img/bricklaugh.png" alt="">
+        <span onclick="restartGame()">RESTART</span>
+    </div>
+    <div style="background-color: rgba(25,25,50,.9);" id="win-modal">
+        <h1>¡YOU WIN!</h1>
+        <img id="win-brick" src="./img/brick3.png" alt="">
         <span onclick="restartGame()">RESTART</span>
     </div>
     <h2>SCORE</h2>

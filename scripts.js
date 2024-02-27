@@ -11,7 +11,8 @@ const $brick3hit = document.querySelector("#brick3hit");
 const $brick4hit = document.querySelector("#brick4hit");
 const winModal = document.querySelector("#win-modal");
 const loseModal = document.querySelector("#lose-modal");
-const laughingBrick = document.querySelector("#laughing-brick");
+const laughingBrick = document.querySelector("#win-brick");
+const winBrick = document.querySelector("#win-brick");
 const startBtn = document.querySelector("#start-btn");
 const modal = document.querySelector("#modal-start");
 const animatedElements = document.querySelectorAll(".face,h5");
@@ -410,6 +411,9 @@ function restartGame() {
     loseModal.style.opacity = 0;
     loseModal.style.zIndex = -1;
     laughingBrick.style.animation = "none";
+    winModal.style.opacity = 0;
+    winModal.style.zIndex = -1;
+    winBrick.style.animation = "none";
     bricksDestroyed = 0;
     shadowCount = 0;
     counter = 0;
@@ -428,9 +432,11 @@ function restartGame() {
 
 function checkWin() {
     if (bricksDestroyed >= (brickColumnCount * brickRowCount)) {
-        gameSign.innerHTML = "YOU WIN";
-        winSound.play();
+        winModal.style.opacity = 1;
+        winModal.style.zIndex = 1;
+        laughingBrick.style.animation = "shine .7s linear infinite";
         stopGame();
+        winSound.play();
     }
 }
 
