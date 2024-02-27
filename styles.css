@@ -14,6 +14,10 @@ body {
     overflow: hidden;
 }
 
+audio {
+    position: absolute;
+}
+
 canvas {
     border: 1px solid #fff;
     border-bottom: transparent;
@@ -23,21 +27,36 @@ canvas {
     display: block;
 }
 
-h1 {
-    display: inline-block;
-    width: 100vw;
-    height: 160px;
-    line-height: 160px;
-    font-size: 40px;
-    border-radius: 9px;
+#lose-modal {
     position: absolute;
-    margin: 180px auto;
-    inset: 0; 
-    text-align: center; 
-    color: white;
-    background-color: rgba(50,50,50,.7);
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+    width: 100vw;
+    height: 90vh;
+    background-color: rgba(50,25,25,.9);
     transition: opacity .3s ease;
     opacity: 0;
+    z-index: -1;
+}
+
+#lose-modal > img {
+    width: 100px;
+}
+
+@keyframes laugh {
+    0% {transform: translateY(0);}
+    40% {transform: translateY(0);}
+    70% {transform: translateY(-10px);}
+    100% {transform: translateY(0);}
+}
+
+h1 {
+    font-size: 40px;
+    margin: 0;
 }
 
 h2 {
@@ -117,10 +136,6 @@ h5:nth-of-type(9) {
 }
 
 span {
-    position: absolute;
-    top: 400px;
-    left: 50%;
-    transform: translateX(-50%);
     width: 200px;
     height: 70px;
     border-radius: 9px;
@@ -128,9 +143,6 @@ span {
     font-size: 40px;
     text-align: center;
     background-color: rgba(9,9,9,.5);
-    transition: all .5s ease;
-    opacity: 0;
-    z-index: -1;
 }
 
 span:hover {

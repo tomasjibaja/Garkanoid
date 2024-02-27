@@ -9,19 +9,20 @@ const $brick1hit = document.querySelector("#brick1hit");
 const $brick2hit = document.querySelector("#brick2hit");
 const $brick3hit = document.querySelector("#brick3hit");
 const $brick4hit = document.querySelector("#brick4hit");
-const gameSign = document.querySelector("h1");
+const winModal = document.querySelector("#win-modal");
+const loseModal = document.querySelector("#lose-modal");
+const laughingBrick = document.querySelector("#laughing-brick");
 const startBtn = document.querySelector("#start-btn");
 const modal = document.querySelector("#modal-start");
 const animatedElements = document.querySelectorAll(".face,h5");
 const restartBtn = document.querySelector("span");
 const scoreTag = document.querySelector("h3");
 const vel = document.querySelector("p");
+
+// Variables de juego
 let bricksDestroyed = 0;
-let shadowCount = 0;
-let counter = 0;
 let score = 0;
 let gameOver = false;
-
 canvas.width = 379;
 canvas.height = 520;
 
@@ -34,6 +35,8 @@ let shadowY1 = shadowY2 = shadowY3 = shadowY4 = y;
 let dx = 0;
 let dy = 0;
 let ballStuck = true;
+let shadowCount = 0;
+let counter = 0;
 
 // Variables de la paleta
 const padHeight = 16;
@@ -61,6 +64,17 @@ const BRICK_STATUS = {
     DESTROYED: 0
 }
 
+// Variables de audio
+var audioCtx = null;
+var buffer = null;
+var source = null;
+var padSound = document.getElementById("pad-sound");
+var brickSound = document.getElementById("brick-sound");
+var screamSound = document.getElementById("scream-sound");
+var loseSound = document.getElementById("lose-sound");
+var winSound = document.getElementById("win-sound");
+
+// Funciones de ladrillos
 function initBricks() {
     for (let c = 0; c < brickColumnCount; c++) {
         bricks[c] = [];
@@ -82,53 +96,6 @@ function initBricks() {
             }
         }
     }
-}
-
-function drawBall() {
-    if (ballStuck) {
-        x = padX + (padWidth / 2)
-    }
-    ctx.beginPath();
-    ctx.arc(shadowX4, shadowY4, ballRadius - 3, 0, Math.PI * 2);
-    ctx.fillStyle = "rgba(250,250,250,.35";
-    ctx.fill();
-    ctx.closePath();
-    ctx.beginPath();
-    ctx.arc(shadowX3, shadowY3, ballRadius - 2, 0, Math.PI * 2);
-    ctx.fillStyle = "rgba(250,250,250,.4)";
-    ctx.fill();
-    ctx.closePath();
-    ctx.beginPath();
-    ctx.arc(shadowX2, shadowY2, ballRadius - 1, 0, Math.PI * 2);
-    ctx.fillStyle = "rgba(250,250,250,.45";
-    ctx.fill();
-    ctx.closePath();
-    ctx.beginPath();
-    ctx.arc(shadowX1, shadowY1, ballRadius, 0, Math.PI * 2);
-    ctx.fillStyle = "rgba(250,250,250,.5)";
-    ctx.fill();
-    ctx.closePath();
-    ctx.beginPath();
-    ctx.arc(x, y, ballRadius + 2, 0, Math.PI * 2);
-    ctx.fillStyle = "#000";
-    ctx.fill();
-    ctx.closePath();
-    ctx.beginPath();
-    ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
-    ctx.fillStyle = "#fff";
-    ctx.fill();
-    ctx.closePath();
-}
-
-function drawPad() {
-    ctx.fillStyle = "#999";
-    ctx.drawImage(
-        $sprite,
-        padX,
-        padY,
-        padWidth,
-        padHeight
-    )
 }
 
 function drawBricks() {
@@ -224,72 +191,42 @@ function drawBricks() {
     }
 }
 
-function collisionDetection() {
-    // Colisión paredes
-    if (x + dx > canvas.width - ballRadius || 
-        x + dx < ballRadius) {
-        dx *= -1;
-    };
-    if (y + dy < ballRadius) {
-        dy *= -1;
-    };
 
-    // Colisión pad-pelota
-    const isBallSameXAsPad = (x > padX && x < padX + padWidth);
-    const isBallTouchingPaddle = (y + dy > padY);
-
-    if (isBallSameXAsPad && isBallTouchingPaddle) {
-        dy = (dy * -1) - (score / 50000) - momentum;
-        dx = dx + (Math.random() * 0.1 - 0.05);
-        upPressed = false;
+// Funciones de pelota
+function drawBall() {
+    if (ballStuck) {
+        x = padX + (padWidth / 2)
     }
-
-    // Colisión pelota-piso
-    if (y + dy > canvas.height - ballRadius) {
-        gameSign.innerHTML = "GAME OVER";
-        stopGame();
-    }
-
-    // Colisión pelota-ladrillo
-    for (let c = 0; c < brickColumnCount; c++) {
-        for (let r = 0; r < brickRowCount; r++) {
-            const currBrick = bricks[c][r];
-            if (currBrick.status === BRICK_STATUS.DESTROYED)
-            continue;
-
-            const isBallSameXAsBrick = 
-                x >= currBrick.x &&
-                x <= currBrick.x + brickSide;
-
-            const isBallSameYAsBrick = 
-                y >= currBrick.y &&
-                y <= currBrick.y + brickSide;
-
-            const isBallHittingLaterals =
-                y - currBrick.y > 4 &&
-                y - currBrick.y < 28; 
-
-            if (isBallSameXAsBrick && isBallSameYAsBrick) {
-                if (!isBallHittingLaterals) {
-                    dy *= -1;
-                } else {dx *= -1}
-                currBrick.dx = dx * 2;
-                currBrick.status = BRICK_STATUS.DESTROYED;
-                bricksDestroyed++;
-                currBrick.type += 4;
-                score += currBrick.prize;
-                scoreTag.innerHTML = score;
-                checkWin();
-            }             
-        }
-    }
-}
-
-function checkWin() {
-    if (bricksDestroyed >= (brickColumnCount * brickRowCount)) {
-        gameSign.innerHTML = "YOU WIN";
-        stopGame();
-    }
+    ctx.beginPath();
+    ctx.arc(shadowX4, shadowY4, ballRadius - 3, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(250,250,250,.35";
+    ctx.fill();
+    ctx.closePath();
+    ctx.beginPath();
+    ctx.arc(shadowX3, shadowY3, ballRadius - 2, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(250,250,250,.4)";
+    ctx.fill();
+    ctx.closePath();
+    ctx.beginPath();
+    ctx.arc(shadowX2, shadowY2, ballRadius - 1, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(250,250,250,.45";
+    ctx.fill();
+    ctx.closePath();
+    ctx.beginPath();
+    ctx.arc(shadowX1, shadowY1, ballRadius, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(250,250,250,.5)";
+    ctx.fill();
+    ctx.closePath();
+    ctx.beginPath();
+    ctx.arc(x, y, ballRadius + 2, 0, Math.PI * 2);
+    ctx.fillStyle = "#000";
+    ctx.fill();
+    ctx.closePath();
+    ctx.beginPath();
+    ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
+    ctx.fillStyle = "#fff";
+    ctx.fill();
+    ctx.closePath();
 }
 
 function ballMovement() {
@@ -331,6 +268,18 @@ function ballMovement() {
     shadowCount++;
 }
 
+// Funciones de paleta
+function drawPad() {
+    ctx.fillStyle = "#999";
+    ctx.drawImage(
+        $sprite,
+        padX,
+        padY,
+        padWidth,
+        padHeight
+    )
+}
+
 function paddleMovement() {
     if (rightPressed && padX < canvas.width - padWidth) {
         padX += 7 + (score / 2000);
@@ -345,6 +294,143 @@ function paddleMovement() {
     if (!upPressed && padY <= canvas.height - padHeight - 10) {
         padY += 5;
         padYacel = 0;
+    }
+}
+
+// Funciones de colisión
+function collisionDetection() {
+    // Colisión paredes
+    if (x + dx > canvas.width - ballRadius || 
+        x + dx < ballRadius) {
+        dx *= -1;
+    };
+    if (y + dy < ballRadius) {
+        dy *= -1;
+    };
+
+    // Colisión pad-pelota
+    const isBallSameXAsPad = (x > padX && x < padX + padWidth);
+    const isBallTouchingPaddle = (y + dy > padY);
+
+    if (isBallSameXAsPad && isBallTouchingPaddle) {
+        dy = (dy * -1) - (score / 50000) - momentum;
+        dx = dx + (Math.random() * 0.1 - 0.05);
+        upPressed = false;
+        padSound.play();
+    }
+
+    // Colisión pelota-piso
+    if (y + dy > canvas.height - ballRadius) {
+        loseModal.style.opacity = 1;
+        loseModal.style.zIndex = 1;
+        laughingBrick.style.animation = "laugh .18s linear 15";
+        stopGame();
+        loseSound.play();
+    }
+
+    // Colisión pelota-ladrillo
+    for (let c = 0; c < brickColumnCount; c++) {
+        for (let r = 0; r < brickRowCount; r++) {
+            const currBrick = bricks[c][r];
+            if (currBrick.status === BRICK_STATUS.DESTROYED)
+            continue;
+
+            const isBallSameXAsBrick = 
+                x >= currBrick.x &&
+                x <= currBrick.x + brickSide;
+
+            const isBallSameYAsBrick = 
+                y >= currBrick.y &&
+                y <= currBrick.y + brickSide;
+
+            const isBallHittingLaterals =
+                y - currBrick.y > 4 &&
+                y - currBrick.y < 28; 
+
+            if (isBallSameXAsBrick && isBallSameYAsBrick) {
+                if (!isBallHittingLaterals) {
+                    dy *= -1;
+                } else {dx *= -1}
+                currBrick.dx = dx * 2;
+                currBrick.status = BRICK_STATUS.DESTROYED;
+                brickSound.play();
+                if (currBrick.type == 1) {
+                    screamSound.play();
+                }
+                bricksDestroyed++;
+                source.playbackRate.value = 1 + Math.abs(dy) * 0.005;
+                currBrick.type += 4;
+                score += currBrick.prize;
+                scoreTag.innerHTML = score;
+                checkWin();
+            }             
+        }
+    }
+}
+
+
+// Funciones de juego
+startBtn.addEventListener(
+    "click",
+    () => {
+        initBricks();
+        initEvents();
+        startBtn.style.animation = "blink .3s linear infinite"
+        modal.style.backgroundColor = "#fff";
+        setTimeout(() => {
+            modal.style.backgroundColor = "#111";
+        }, 50);
+
+        audioCtx = new AudioContext();
+        initBuffer();
+
+        setTimeout(() => {
+            animatedElements.forEach((elem) => {
+                elem.style.animation = "none";
+                elem.style.opacity = 0;
+                elem.style.zIndex = -1;
+            })
+            modal.style.opacity = 0;
+            modal.style.zIndex = -1;
+            draw();
+            startMusic();
+        }, 2000);
+    }
+)
+
+function stopGame() {
+    dy = dx = 0;
+    gameOver = true;
+    stopMusic();
+    /*document.removeEventListener("keydown", keyDownHandler);
+    document.removeEventListener("keyup", keyUpHandler);*/
+}
+
+function restartGame() {
+    loseModal.style.opacity = 0;
+    loseModal.style.zIndex = -1;
+    laughingBrick.style.animation = "none";
+    bricksDestroyed = 0;
+    shadowCount = 0;
+    counter = 0;
+    score = 0;
+    gameOver = false;
+    shadowX1 = shadowX2 = shadowX3 = shadowX4 = x;
+    shadowY1 = shadowY2 = shadowY3 = shadowY4 = y;
+    ballStuck = true;
+    x = canvas.width / 2;
+    y =  canvas.height - 30;
+    initBricks();
+    initEvents();
+    startMusic();
+    draw();
+}
+
+function checkWin() {
+    if (bricksDestroyed >= (brickColumnCount * brickRowCount)) {
+        gameSign.innerHTML = "YOU WIN";
+        winSound.play();
+        stopGame();
     }
 }
 
@@ -387,35 +473,6 @@ function initEvents() {
     }
 }
 
-function stopGame() {
-    dy = dx = 0;
-    gameOver = true;
-    gameSign.style.opacity = 1;
-    restartBtn.style.opacity = 1;
-    restartBtn.style.zIndex = 1;
-    /*document.removeEventListener("keydown", keyDownHandler);
-    document.removeEventListener("keyup", keyUpHandler);*/
-}
-
-function restartGame() {
-    gameSign.style.opacity = 0;
-    restartBtn.style.opacity = 0;
-    restartBtn.style.zIndex = -1;
-    bricksDestroyed = 0;
-    shadowCount = 0;
-    counter = 0;
-    score = 0;
-    gameOver = false;
-    shadowX1 = shadowX2 = shadowX3 = shadowX4 = x;
-    shadowY1 = shadowY2 = shadowY3 = shadowY4 = y;
-    ballStuck = true;
-    x = canvas.width / 2;
-    y =  canvas.height - 30;
-    initBricks();
-    initEvents();
-    draw();
-}
-
 function draw() {
     cleanCanvas();
     drawBricks();
@@ -428,26 +485,6 @@ function draw() {
     window.requestAnimationFrame(draw);
 }
 
-function startGame() {
-    initBricks();
-    initEvents();
-    startBtn.style.animation = "blink .3s linear infinite"
-    modal.style.backgroundColor = "#fff";
-    setTimeout(() => {
-        modal.style.backgroundColor = "#111";
-    }, 50);
-
-    setTimeout(() => {
-        animatedElements.forEach((elem) => {
-            elem.style.animation = "none";
-            elem.style.opacity = 0;
-            elem.style.zIndex = -1;
-        })
-        modal.style.opacity = 0;
-        modal.style.zIndex = -1;
-        draw();
-    }, 2000);
-}
 
 // Mobile control
 document.addEventListener("touchstart", e => {
@@ -468,3 +505,27 @@ document.addEventListener("touchmove", e => {
     } else {upPressed = false}
     lastPadY = touchY;
 })
+
+// Audio
+function initBuffer() {
+    const request = new XMLHttpRequest();
+    request.open("GET", "./sounds/music2.mp3");
+    request.responseType = "arraybuffer";
+    request.onload = function() {
+    let undecodedAudio = request.response;
+    audioCtx.decodeAudioData(undecodedAudio, (data) => buffer = data);
+  };
+  request.send();
+}
+
+function startMusic() {
+    source = audioCtx.createBufferSource();
+    source.buffer = buffer;
+    source.loop = true;
+    source.connect(audioCtx.destination);
+    source.start(audioCtx.currentTime);
+}
+
+function stopMusic() {
+    source.stop();
+}

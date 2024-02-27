@@ -24,10 +24,14 @@
     <img hidden id="brick3hit" src="./img/brick3hit.png" alt="Brick face">
     <img hidden id="brick4hit" src="./img/brick4hit.png" alt="Brick face">
 
-    <h1></h1>
+    <div id="lose-modal">
+        <h1>GAME OVER</h1>
+        <img id="laughing-brick" src="./img/bricklaugh.png" alt="">
+        <span onclick="restartGame()">RESTART</span>
+    </div>
     <h2>SCORE</h2>
     <h3></h3>
-    <span onclick="restartGame()">RESTART</span>
+    
 
     <div id="modal-start">
         <div id="title">
@@ -42,11 +46,16 @@
             <h5>D</h5>
         </div>
         <img src="./img/brick4.png" alt="">
-        <h5 onclick="startGame()" id="start-btn">START GAME</h5>
+        <h5 id="start-btn">START GAME</h5>
         <img class="face one" src="./img/brick3.png" alt="">
         <img class="face two" src="./img/brick2.png" alt="">
         <img class="face three" src="./img/brick1.png" alt="">
     </div>
+    <audio src="./sounds/brick.mp3" id="brick-sound"></audio>
+    <audio src="./sounds/pad.mp3" id="pad-sound"></audio>
+    <audio src="./sounds/win.mp3" id="win-sound"></audio>
+    <audio src="./sounds/laugh.mp3" id="lose-sound"></audio>
+    <audio src="./sounds/grump.mp3" id="scream-sound"></audio>
     <script src="scripts.js"></script>
 </body>
 </html>
