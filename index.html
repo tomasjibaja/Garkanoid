@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="./img/favicon.ico">
+    <title>GARKANOID</title>
+</head>
+<body>
+    <canvas></canvas>
+    
+    <img hidden id="sprite" src="./img/stonePadSprite.png" alt="Sprite Arkanoid">
+    <img hidden id="brick1" src="./img/brick1.png" alt="Brick face">
+    <img hidden id="brick2" src="./img/brick2.png" alt="Brick face">
+    <img hidden id="brick3" src="./img/brick3.png" alt="Brick face">
+    <img hidden id="brick4" src="./img/brick4.png" alt="Brick face">
+    <img hidden id="brick1hit" src="./img/brick1hit.png" alt="Brick face">
+    <img hidden id="brick2hit" src="./img/brick2hit.png" alt="Brick face">
+    <img hidden id="brick3hit" src="./img/brick3hit.png" alt="Brick face">
+    <img hidden id="brick4hit" src="./img/brick4hit.png" alt="Brick face">
+
+    <h1></h1>
+    <h2>SCORE</h2>
+    <h3></h3>
+    <span onclick="restartGame()">RESTART</span>
+
+    <div id="modal-start">
+        <div id="title">
+            <h5>G</h5>
+            <h5>A</h5>
+            <h5>R</h5>
+            <h5>K</h5>
+            <h5>A</h5>
+            <h5>N</h5>
+            <h5>O</h5>
+            <h5>I</h5>
+            <h5>D</h5>
+        </div>
+        <img src="./img/brick4.png" alt="">
+        <h5 onclick="startGame()" id="start-btn">START GAME</h5>
+        <img class="face one" src="./img/brick3.png" alt="">
+        <img class="face two" src="./img/brick2.png" alt="">
+        <img class="face three" src="./img/brick1.png" alt="">
+    </div>
+    <script src="scripts.js"></script>
+</body>
+</html>
