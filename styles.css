@@ -1,6 +1,7 @@
 html {
     overflow: hidden;
     user-select: none;
+    touch-action: manipulation;
 }
 
 body {
@@ -12,6 +13,7 @@ body {
     padding: 0;
     width: 100vw;
     overflow: hidden;
+    touch-action: manipulation;
 }
 
 audio {
@@ -25,7 +27,11 @@ canvas {
     margin: auto;
     margin-top: 100px;
     display: block;
+    touch-action: manipulation;
+
+    --canvas-width: 379;
 }
+
 
 #lose-modal, #win-modal {
     position: absolute;
@@ -40,15 +46,11 @@ canvas {
     transition: opacity .3s ease;
     opacity: 0;
     z-index: -1;
+    touch-action: manipulation;
 }
 
-#win-brick, #win-brick {
+#win-brick, #laughing-brick {
     width: 100px;
-    filter: brightness(1);
-}
-
-#win-brick:hover {
-    filter: brightness(2);
 }
 
 @keyframes laugh {
@@ -127,6 +129,16 @@ h5:nth-of-type(9) {
     animation: jump 6.5s linear infinite;
 }
 
+#layer {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    touch-action: manipulation;
+}
+
 #start-btn {
     animation: blink 1s linear infinite;
     font-size: 50px;
@@ -172,6 +184,7 @@ span:hover {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    touch-action: manipulation;
 }
 
 #modal-start > img {
@@ -202,7 +215,7 @@ span:hover {
     100% {opacity: 0;}
 }
 
-@media only screen and (minn-width: 768px) {
+@media only screen and (min-width: 768px) {
     h5 {
         font-size: 70px;
     }

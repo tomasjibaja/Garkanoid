@@ -11,9 +11,10 @@ const $brick3hit = document.querySelector("#brick3hit");
 const $brick4hit = document.querySelector("#brick4hit");
 const winModal = document.querySelector("#win-modal");
 const loseModal = document.querySelector("#lose-modal");
-const laughingBrick = document.querySelector("#win-brick");
+const laughingBrick = document.querySelector("#laughing-brick");
 const winBrick = document.querySelector("#win-brick");
 const startBtn = document.querySelector("#start-btn");
+const layer = document.querySelector("#layer");
 const modal = document.querySelector("#modal-start");
 const animatedElements = document.querySelectorAll(".face,h5");
 const restartBtn = document.querySelector("span");
@@ -199,22 +200,22 @@ function drawBall() {
         x = padX + (padWidth / 2)
     }
     ctx.beginPath();
-    ctx.arc(shadowX4, shadowY4, ballRadius - 3, 0, Math.PI * 2);
+    ctx.arc(shadowX4, shadowY4, ballRadius - 5, 0, Math.PI * 2);
     ctx.fillStyle = "rgba(250,250,250,.35";
     ctx.fill();
     ctx.closePath();
     ctx.beginPath();
-    ctx.arc(shadowX3, shadowY3, ballRadius - 2, 0, Math.PI * 2);
+    ctx.arc(shadowX3, shadowY3, ballRadius - 4, 0, Math.PI * 2);
     ctx.fillStyle = "rgba(250,250,250,.4)";
     ctx.fill();
     ctx.closePath();
     ctx.beginPath();
-    ctx.arc(shadowX2, shadowY2, ballRadius - 1, 0, Math.PI * 2);
+    ctx.arc(shadowX2, shadowY2, ballRadius - 3, 0, Math.PI * 2);
     ctx.fillStyle = "rgba(250,250,250,.45";
     ctx.fill();
     ctx.closePath();
     ctx.beginPath();
-    ctx.arc(shadowX1, shadowY1, ballRadius, 0, Math.PI * 2);
+    ctx.arc(shadowX1, shadowY1, ballRadius - 2, 0, Math.PI * 2);
     ctx.fillStyle = "rgba(250,250,250,.5)";
     ctx.fill();
     ctx.closePath();
@@ -236,7 +237,7 @@ function ballMovement() {
         counter = 0;
     }
     if (counter % 90 == 0) {
-        rndX = (Math.random() - 0.5) * ((score + 5000) / 7000);
+        rndX = (Math.random() - 0.5) * ((score + 5000) / 6000);
     }
     if (dx == 0) {dx = 1}
     dx += rndX;
@@ -314,7 +315,7 @@ function collisionDetection() {
     const isBallTouchingPaddle = (y + dy > padY);
 
     if (isBallSameXAsPad && isBallTouchingPaddle) {
-        dy = (dy * -1) - (score / 50000) - momentum;
+        dy = (dy * -1) - (score / 70000) - momentum;
         dx = dx + (Math.random() * 0.1 - 0.05);
         upPressed = false;
         padSound.play();
@@ -359,7 +360,7 @@ function collisionDetection() {
                     screamSound.play();
                 }
                 bricksDestroyed++;
-                source.playbackRate.value = 1 + Math.abs(dy) * 0.005;
+                source.playbackRate.value = 1 + Math.abs(dy) * 0.001;
                 currBrick.type += 4;
                 score += currBrick.prize;
                 scoreTag.innerHTML = score;
@@ -376,8 +377,9 @@ startBtn.addEventListener(
     () => {
         initBricks();
         initEvents();
-        startBtn.style.animation = "blink .3s linear infinite"
-        modal.style.backgroundColor = "#fff";
+        startBtn.style.animation = "blink .3s linear infinite";
+        layer.style.zIndex = 1;
+        modal.style.backgroundColor = "#aaa";
         setTimeout(() => {
             modal.style.backgroundColor = "#111";
         }, 50);
@@ -393,6 +395,7 @@ startBtn.addEventListener(
             })
             modal.style.opacity = 0;
             modal.style.zIndex = -1;
+            layer.style.zIndex = -1;
             draw();
             startMusic();
         }, 2000);
@@ -434,7 +437,7 @@ function checkWin() {
     if (bricksDestroyed >= (brickColumnCount * brickRowCount)) {
         winModal.style.opacity = 1;
         winModal.style.zIndex = 1;
-        laughingBrick.style.animation = "shine .7s linear infinite";
+        winBrick.style.animation = "shine .7s linear infinite";
         stopGame();
         winSound.play();
     }
