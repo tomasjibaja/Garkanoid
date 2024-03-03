@@ -1,3 +1,4 @@
+// Variables del DOM
 const canvas = document.querySelector("canvas");
 const ctx = canvas.getContext("2d");
 const $sprite = document.querySelector("#sprite");
@@ -5,6 +6,7 @@ const $brick1 = document.querySelector("#brick1");
 const $brick2 = document.querySelector("#brick2");
 const $brick3 = document.querySelector("#brick3");
 const $brick4 = document.querySelector("#brick4");
+const $brickGod = document.querySelector("#brick-god");
 const $brick1hit = document.querySelector("#brick1hit");
 const $brick2hit = document.querySelector("#brick2hit");
 const $brick3hit = document.querySelector("#brick3hit");
@@ -22,8 +24,8 @@ const scoreTag = document.querySelector("h3");
 const vel = document.querySelector("p");
 
 // Variables de juego
-let bricksDestroyed = 0;
 let score = 0;
+let level = 1;
 let gameOver = false;
 canvas.width = 379;
 canvas.height = 520;
@@ -60,6 +62,9 @@ const brickGap = 2;
 const brickOffsetTop = 4;
 const brickOffsetLeft = 4;
 const bricks = [];
+let brickTypes = 4;
+let godBricks = 0;
+let bricksDestroyed = 0;
 
 const BRICK_STATUS = {
     ACTIVE: 1,
@@ -72,6 +77,7 @@ var buffer = null;
 var source = null;
 var padSound = document.getElementById("pad-sound");
 var brickSound = document.getElementById("brick-sound");
+var metalSound = document.getElementById("metal-sound");
 var screamSound = document.getElementById("scream-sound");
 var loseSound = document.getElementById("lose-sound");
 var winSound = document.getElementById("win-sound");
@@ -83,9 +89,15 @@ function initBricks() {
         // calculo de pos brick en pantalla
         for (let r = 0; r < brickRowCount; r++) {
             const brickX = c * (brickSide + brickGap) + brickOffsetLeft;
-            const brickY = r * (brickSide + brickGap) + 
-            brickOffsetTop;
-            const random = Math.floor(Math.random() * 4) + 1;
+            const brickY = r * (brickSide + brickGap) + brickOffsetTop;
+            let random = Math.floor(Math.random() * brickTypes) + 1;
+            if (random == 5) {
+                if (godBricks > 3) {
+                    random--;
+                } else {
+                    godBricks++;
+                }
+            }
             bricks[c][r] = {
                 x: brickX, 
                 dx: 0,
@@ -153,7 +165,7 @@ function drawBricks() {
                     break;
                 case 5:
                     ctx.drawImage(
-                        $brick1hit,
+                        $brickGod,
                         currBrick.x,
                         currBrick.y,
                         brickSide,
@@ -162,7 +174,7 @@ function drawBricks() {
                     break;
                 case 6:
                     ctx.drawImage(
-                        $brick2hit,
+                        $brick1hit,
                         currBrick.x,
                         currBrick.y,
                         brickSide,
@@ -171,7 +183,7 @@ function drawBricks() {
                     break;
                 case 7:
                     ctx.drawImage(
-                        $brick3hit,
+                        $brick2hit,
                         currBrick.x,
                         currBrick.y,
                         brickSide,
@@ -179,6 +191,15 @@ function drawBricks() {
                     );
                     break;
                 case 8:
+                    ctx.drawImage(
+                        $brick3hit,
+                        currBrick.x,
+                        currBrick.y,
+                        brickSide,
+                        brickSide
+                    );
+                    break;
+                case 9:
                     ctx.drawImage(
                         $brick4hit,
                         currBrick.x,
@@ -192,7 +213,6 @@ function drawBricks() {
         }
     }
 }
-
 
 // Funciones de pelota
 function drawBall() {
@@ -350,21 +370,25 @@ function collisionDetection() {
                 y - currBrick.y < 28; 
 
             if (isBallSameXAsBrick && isBallSameYAsBrick) {
-                if (!isBallHittingLaterals) {
-                    dy *= -1;
-                } else {dx *= -1}
-                currBrick.dx = dx * 2;
-                currBrick.status = BRICK_STATUS.DESTROYED;
-                brickSound.play();
                 if (currBrick.type == 1) {
                     screamSound.play();
                 }
-                bricksDestroyed++;
-                source.playbackRate.value = 1 + Math.abs(dy) * 0.001;
-                currBrick.type += 4;
-                score += currBrick.prize;
-                scoreTag.innerHTML = score;
-                checkWin();
+                if (!isBallHittingLaterals) {
+                    dy *= -1;
+                } else {dx *= -1}
+                if (currBrick.type == 5) {
+                    metalSound.play()
+                } else {
+                    brickSound.play();
+                    currBrick.dx = dx * 2;
+                    currBrick.status = BRICK_STATUS.DESTROYED;
+                    bricksDestroyed++;
+                    source.playbackRate.value = 1 + Math.abs(dy) * 0.001;
+                    currBrick.type += 5;
+                    score += currBrick.prize;
+                    scoreTag.innerHTML = score;
+                    checkWin();
+                }
             }             
         }
     }
@@ -418,9 +442,12 @@ function restartGame() {
     winModal.style.zIndex = -1;
     winBrick.style.animation = "none";
     bricksDestroyed = 0;
+    godBricks = 0;
     shadowCount = 0;
     counter = 0;
-    score = 0;
+    if (level == 2) {
+        brickTypes = 5;
+    } else {score = 0;}
     gameOver = false;
     shadowX1 = shadowX2 = shadowX3 = shadowX4 = x;
     shadowY1 = shadowY2 = shadowY3 = shadowY4 = y;
@@ -440,6 +467,7 @@ function checkWin() {
         winBrick.style.animation = "shine .7s linear infinite";
         stopGame();
         winSound.play();
+        level = 2;
     }
 }
 
